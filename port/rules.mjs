@@ -58,6 +58,10 @@ export const TEXT_RULES = [
   { id: "task-model", find: /\bomit Task `model`/g, replace: "omit the Agent `model` and `effort`", min: 2 },
   { id: "task-schema", find: /\bthe full Task schema\b/g, replace: "the full Agent tool schema", min: 1 },
 
+  { id: "an-agent", find: /\ba `Agent`/g, replace: "an `Agent`", min: 3 },
+  { id: "skill-used", find: /A skill counts as used when the transcript shows a `Read` of its `SKILL\.md`/g, replace: "A skill counts as used when the transcript shows a `Skill` tool call loading it, a `Read` of its `SKILL.md`", min: 3 },
+  { id: "shell-tool", find: /\(Shell, Grep, MCP, etc\.\)/g, replace: "(Bash, Grep, MCP, etc.)", min: 3 },
+
   // Subagent types.
   { id: "general-purpose", find: /`?subagent_type: generalPurpose`?/g, replace: "`subagent_type: general-purpose`", min: 4 },
   { id: "general-purpose-bare", find: /`generalPurpose`/g, replace: "`general-purpose`", min: 2 },
@@ -75,14 +79,22 @@ export const TEXT_RULES = [
   { id: "opus-default", find: /claude-opus-5-5-xhigh/g, replace: "opus xhigh", min: 12 },
   // The fast code default splits by role.
   { id: "fast-interrogate", files: /^skills\/interrogate\//, find: /grok-4\.7-xhigh-fast/g, replace: "sonnet xhigh", min: 1 },
-  { id: "fast-haiku", files: /^skills\/(swarm|why|how)\/SKILL\.md$/, find: /grok-4\.7-xhigh-fast/g, replace: "haiku high", min: 3 },
+  { id: "fast-haiku", files: /^skills\/(swarm|why|how)\/SKILL\.md$|^skills\/poteto-mode\/playbooks\/multi-phase-plan\.md$/, find: /grok-4\.7-xhigh-fast/g, replace: "haiku high", min: 4 },
   {
     id: "fast-sonnet",
-    files: /^skills\/(reflect|arena|architect)\/SKILL\.md$|^skills\/poteto-mode\/playbooks\/(bug-fix|hillclimb|feature|perf-issue)\.md$/,
+    files: /^skills\/(reflect|arena|architect)\/SKILL\.md$|^skills\/poteto-mode\/playbooks\/(bug-fix|hillclimb|feature|perf-issue|refactoring)\.md$/,
     find: /grok-4\.7-xhigh-fast/g,
     replace: "sonnet high",
-    min: 8,
+    min: 9,
   },
+
+  // Per-role model lines carry a model and an effort; the Agent tool takes them separately.
+  // `model` is an alias enum, so there is no "closest slug of the same family" to fall back to.
+  { id: "model-line-set", find: /Set `model` to that line's value, or to the default if the rule or the line is missing\./g, replace: "Set `model` and `effort` from that line's value, or from the default if the file or the line is missing.", min: 3 },
+  { id: "model-line-alias", find: /Leave `model` unset when the value is `auto` or `inherit-parent`\./g, replace: "Leave both unset when the value is `auto` or `inherit-parent`.", min: 3 },
+  { id: "model-line-omit", find: /omit `model` so the workers run on the parent model/g, replace: "omit `model` and `effort` so the workers run on the parent model", min: 1 },
+  { id: "model-rejects-slug", find: /If the Agent tool rejects a slug, use the default and say so\./g, replace: "If the Agent tool rejects a value, use the default and say so.", min: 4 },
+  { id: "model-closest-slug", find: / If it rejects the default, use the closest valid slug of the same family from its error message\./g, replace: "", min: 4 },
 
   // Cursor-team-kit and Cursor built-ins.
   { id: "create-skill", find: /(?<![\w-])create-skill(?![\w-])/g, replace: "skill-creator", min: 15 },
