@@ -128,7 +128,7 @@ To change the port itself, edit the output under `skills/`, `agents/`, `scripts/
 
 ## Smoke run
 
-Five live runs on 2026-10-13, Claude Code 2.1.296, default model, each `claude --plugin-dir <this repo> --add-dir <this repo> --permission-mode acceptEdits -p "/pstack:poteto-mode <task>"` in a scratch git repo. The transcripts are on the owner's machine.
+Seven live runs on 2026-10-13, Claude Code 2.1.296, default model, each `claude --plugin-dir <this repo> --add-dir <this repo> --permission-mode acceptEdits -p "/pstack:poteto-mode <task>"` in a scratch git repo. The transcripts are on the owner's machine.
 
 | Run | Task | Transcript |
 | --- | --- | --- |
@@ -137,10 +137,12 @@ Five live runs on 2026-10-13, Claude Code 2.1.296, default model, each `claude -
 | 3 | Run 2 again, after the router line that maps "the **x** skill" to `pstack:x` | `<scratch>/smoke-repo2/8dafa1e1-149c-4044-a6a4-9d203f4e01ac.jsonl` |
 | 4 | Run 2, also asking for a PR description | `<scratch>/smoke-repo2/5c3452ca-1712-47d5-aabe-81c6c93d70e8.jsonl` |
 | 5 | Run 1 again, on the final tree after the review fixes | `<scratch>/smoke-repo/8a5dc46a-84b1-4077-9df3-4ce8bc331f9f.jsonl` |
+| 6 | A job queue whose worker and scheduler both re-queue a failed job (two-module fix) | `<scratch>/smoke-repo3/b0d5bdb6-c873-467e-b732-b9ba5572fc09.jsonl` |
+| 7 | Investigation on the run 6 repo: "how does retry handling work, and are we sure the split is right?" | `<scratch>/smoke-repo3/9ba2e81e-d4ec-4f0c-837d-9c730f6ab27a.jsonl` |
 
 Every run loaded the router, opened `playbooks/bug-fix.md`, and read 3 to 5 principle leaves with Read from the plugin root. Every run reproduced the bug, committed a failing test before the fix, fixed the root cause, and named the principles that shaped each choice. Run 2 bisected to the regressing commit. Run 1 surfaced the missed "canonical **x** principle skill" phrase, now fixed in the rules.
 
-No run called a routed skill through the Skill tool. Each reply listed the playbook steps it skipped (the delegate, `architect`, `/simplify`, `/pstack:no-comments`) and gave the change's size as the reason. Run 4 also declined `technical-writing` by name. A probe confirmed that a slash-invoked plugin skill can chain into another through the Skill tool, so this is the model treating the router's skill triggers as advisory on small tasks, not a loading failure. It is an open question for the owner.
+Runs 1 to 6 are bug fixes, and none of them called a routed skill. Each reply listed the playbook steps it skipped (the delegate, `architect`, `/simplify`, `/pstack:no-comments`) and gave the change's size as the reason. Run 4 also declined `technical-writing` by name. Run 6 spanned two modules and still skipped `architect`, calling the fix deletion only. Run 7 proves the routing end to end. The router matched the "are we sure?" trigger and called the Skill tool with `pstack:how`. `how` looked for `~/.claude/pstack-models.md`, found none, and spawned its explainer as `subagent_type: "pstack:readonly-agent"`, `model: "opus"`, `effort: "xhigh"`, `run_in_background: true`. That is the `how explainer` default. So routing works when a trigger clearly fires. On small bug fixes, the model reads the playbook's skill steps as optional, the same way upstream's wording allows.
 
 ## Attribution
 
