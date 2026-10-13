@@ -92,7 +92,7 @@
 -architect runners: opus xhigh, grok-4.7-xhigh-fast
 -interrogate reviewers: opus xhigh, grok-4.7-xhigh-fast
 +arena runners: opus xhigh, sonnet high
-+arena cross-judge pool: opus xhigh
++arena cross-judge pool: opus xhigh, sonnet xhigh
 +swarm workers: haiku high
 +architect runners: opus xhigh, sonnet high
 +interrogate reviewers: opus xhigh, sonnet xhigh

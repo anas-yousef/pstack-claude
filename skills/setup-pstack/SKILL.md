@@ -57,7 +57,7 @@ why synthesizer: opus xhigh
 reflect tooling: sonnet high
 reflect judgment, divergent, synthesizer: opus xhigh
 arena runners: opus xhigh, sonnet high
-arena cross-judge pool: opus xhigh
+arena cross-judge pool: opus xhigh, sonnet xhigh
 swarm workers: haiku high
 architect runners: opus xhigh, sonnet high
 interrogate reviewers: opus xhigh, sonnet xhigh

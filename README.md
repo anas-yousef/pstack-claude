@@ -64,13 +64,13 @@ The [pstack guide](docs/guide/README.md) walks through a first real task. `/psta
 
 | Role | Default |
 | --- | --- |
-| `judgment and prose`, `hardest tasks`, `how explainer`, `why synthesizer`, `reflect judgment, divergent, synthesizer`, `arena cross-judge pool` | `opus xhigh` |
+| `judgment and prose`, `hardest tasks`, `how explainer`, `why synthesizer`, `reflect judgment, divergent, synthesizer` | `opus xhigh` |
 | `feature, refactoring`, `bug-fix`, `perf-issue`, `hillclimb`, `reflect tooling` | `sonnet high` |
 | `swarm workers`, `how explorer`, `why investigators` | `haiku high` |
 | `arena runners`, `architect runners` | `opus xhigh, sonnet high` |
-| `interrogate reviewers` | `opus xhigh, sonnet xhigh` |
+| `interrogate reviewers`, `arena cross-judge pool` | `opus xhigh, sonnet xhigh` |
 
-Upstream's cross-family review (Claude against Grok) is cross-tier review here. `fable` is never a default. It is an escalation you choose for one hard spawn. A budget moves every entry's effort along `low` < `medium` < `high` < `xhigh` < `max`. `unlimited` is one step up, `large` keeps the defaults, `medium` is one step down, and `small` is two steps down, never below `medium`. Upstream set one absolute effort per budget. With mixed defaults that would break "`large` matches the defaults", so the port moves each entry relative to its default.
+Upstream's cross-family review (Claude against Grok) is cross-tier review here. The brief listed the cross-judge pool as `opus xhigh` alone. The port adds `sonnet xhigh`, because Arena picks a judge on a different tier from the parent, and an Opus session had no other tier to pick. `fable` is never a default. It is an escalation you choose for one hard spawn. A budget moves every entry's effort along `low` < `medium` < `high` < `xhigh` < `max`. `unlimited` is one step up, `large` keeps the defaults, `medium` is one step down, and `small` is two steps down, never below `medium`. Upstream set one absolute effort per budget. With mixed defaults that would break "`large` matches the defaults", so the port moves each entry relative to its default.
 
 ## What the port changes
 
