@@ -1,6 +1,6 @@
 # TypeScript patterns
 
-Code examples for each rule in `SKILL.md`. The underlying principles are language-agnostic. See the **type-system-discipline** and **boundary-discipline** principle skills.
+Code examples for each rule in `SKILL.md`. The underlying principles are language-agnostic. See the **type-system-discipline** (`${CLAUDE_PLUGIN_ROOT}/skills/principle-type-system-discipline/SKILL.md`) and **boundary-discipline** (`${CLAUDE_PLUGIN_ROOT}/skills/principle-boundary-discipline/SKILL.md`) principles.
 
 ## Branded types
 

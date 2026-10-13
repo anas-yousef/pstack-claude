@@ -112,7 +112,8 @@ export const TEXT_RULES = [
   },
 
   // Principle references point at the hidden leaf SKILL.md, read with Read.
-  { id: "principle-skill-phrase", find: /the \*\*([a-z-]+)\*\* principle skill/g, replace: (_, x) => `the **${x}** principle (${P("principle-" + x)})`, min: 45 },
+  { id: "principle-skill-pair", find: /\*\*([a-z-]+)\*\* and \*\*([a-z-]+)\*\* principle skills/g, replace: (_, a, b) => `**${a}** (${P("principle-" + a)}) and **${b}** (${P("principle-" + b)}) principles`, min: 3 },
+  { id: "principle-skill-phrase", find: /\*\*([a-z-]+)\*\* principle skill\b/g, replace: (_, x) => `**${x}** principle (${P("principle-" + x)})`, min: 49 },
   { id: "principle-bold", find: /(?<!\()\*\*(principle-[a-z-]+)\*\*(?! \()/g, replace: (_, d) => `**${d}** (${P(d)})`, min: 9 },
   { id: "principle-paren", find: /\((principle-[a-z-]+)\)/g, replace: (_, d) => `(${P(d)})`, min: 4 },
 

@@ -53,7 +53,7 @@ Replace `not implemented` bodies with code, pseudocode with logic. The synthesiz
 
 ## Phase E: Scrap when the architecture is wrong
 
-If implementation keeps producing friction the sketch can't absorb, throw the sketch out. Don't bolt fixes onto a wrong design, per the **redesign-from-first-principles** and **fix-root-causes** principle skills.
+If implementation keeps producing friction the sketch can't absorb, throw the sketch out. Don't bolt fixes onto a wrong design, per the **redesign-from-first-principles** (`${CLAUDE_PLUGIN_ROOT}/skills/principle-redesign-from-first-principles/SKILL.md`) and **fix-root-causes** (`${CLAUDE_PLUGIN_ROOT}/skills/principle-fix-root-causes/SKILL.md`) principles.
 
 The signal is a *pattern*, not single instances. Tells:
 
