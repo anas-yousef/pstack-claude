@@ -128,7 +128,7 @@ To change the port itself, edit the output under `skills/`, `agents/`, `scripts/
 
 ## Smoke run
 
-Four live runs on 2026-10-13, Claude Code 2.1.296, default model, each `claude --plugin-dir <this repo> --add-dir <this repo> --permission-mode acceptEdits -p "/pstack:poteto-mode <task>"` in a scratch git repo. The transcripts are on the owner's machine.
+Five live runs on 2026-10-13, Claude Code 2.1.296, default model, each `claude --plugin-dir <this repo> --add-dir <this repo> --permission-mode acceptEdits -p "/pstack:poteto-mode <task>"` in a scratch git repo. The transcripts are on the owner's machine.
 
 | Run | Task | Transcript |
 | --- | --- | --- |
@@ -136,6 +136,7 @@ Four live runs on 2026-10-13, Claude Code 2.1.296, default model, each `claude -
 | 2 | A memoized `loadConfig` drops env overrides (a regression across three commits) | `<scratch>/smoke-repo2/2b610c2d-73f3-41a6-8e62-e6fef853e67b.jsonl` |
 | 3 | Run 2 again, after the router line that maps "the **x** skill" to `pstack:x` | `<scratch>/smoke-repo2/8dafa1e1-149c-4044-a6a4-9d203f4e01ac.jsonl` |
 | 4 | Run 2, also asking for a PR description | `<scratch>/smoke-repo2/5c3452ca-1712-47d5-aabe-81c6c93d70e8.jsonl` |
+| 5 | Run 1 again, on the final tree after the review fixes | `<scratch>/smoke-repo/8a5dc46a-84b1-4077-9df3-4ce8bc331f9f.jsonl` |
 
 Every run loaded the router, opened `playbooks/bug-fix.md`, and read 3 to 5 principle leaves with Read from the plugin root. Every run reproduced the bug, committed a failing test before the fix, fixed the root cause, and named the principles that shaped each choice. Run 2 bisected to the regressing commit. Run 1 surfaced the missed "canonical **x** principle skill" phrase, now fixed in the rules.
 
