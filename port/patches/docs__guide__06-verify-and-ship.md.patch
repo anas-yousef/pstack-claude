@@ -1,0 +1,11 @@
+--- a/docs/guide/06-verify-and-ship.md
++++ b/docs/guide/06-verify-and-ship.md
+@@ -85,7 +85,7 @@
+ 
+ ## Keep the verification skill honest
+ 
+-Apps change and feature maps rot. Run this at least once a day, ideally from a scheduled automation so nobody has to remember:
++Apps change and feature maps rot. Run this at least once a day, ideally from a scheduled task (`/schedule`) so nobody has to remember:
+ 
+ ```text
+ /pstack:maintain-verification-skill

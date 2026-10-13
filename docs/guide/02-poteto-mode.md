@@ -82,7 +82,7 @@ continue
 keep going until done
 ```
 
-Short works because the playbook holds the structure, and a Custom Mode keeps `/pstack:poteto-mode` in context on every turn. [Set up pstack](./01-setup.md#run-your-first-task) shows how to start one. Your words carry the intent, and the skill carries the rigor.
+Short works because the playbook holds the structure, and one line in your `CLAUDE.md` keeps `/pstack:poteto-mode` applied to every non-trivial task. [Set up pstack](./01-setup.md#run-your-first-task) shows the line. Your words carry the intent, and the skill carries the rigor.
 
 ## Switch tasks with "new task"
 
@@ -92,11 +92,11 @@ A long chat accumulates context from the last task. When you change subjects, sa
 /pstack:poteto-mode new task. figure out why the cache entry survives logout. don't change any code yet.
 ```
 
-"new task" tells `/pstack:poteto-mode` to re-match rather than continue the prior playbook. "don't change any code yet" pins this one to Investigation. Without those two phrases, a mode mid-Feature tends to treat your question as the next feature step.
+"new task" tells `/pstack:poteto-mode` to re-match rather than continue the prior playbook. "don't change any code yet" pins this one to Investigation. Without those two phrases, `/pstack:poteto-mode` mid-Feature tends to treat your question as the next feature step.
 
 ## Give parallel work its own machine
 
-If you run several agents against one repository on one computer, they will fight over the working tree, the ports, and the build output. The cleanest isolation is a [cloud subagent](https://cursor.com/docs/subagents#cloud-subagents). Each one gets its own VM and branch, so it can install dependencies, run your app, and record video of the result without touching your machine. Type `/in-cloud` before the task, or ask the parent chat to hand work to cloud subagents.
+If you run several agents against one repository on one computer, they will fight over the working tree, the ports, and the build output. The cleanest isolation is a remote subagent, which Claude Code offers through the Agent tool's `isolation: "remote"` when your session supports it. Each one gets its own machine and branch, so it can install dependencies and run your app without touching your machine. Ask the parent chat to hand work to remote subagents. When your session doesn't offer them, a local background agent in its own git worktree is the next best thing, with one writer per worktree.
 
 When the work has to stay local, ask for a worktree up front:
 

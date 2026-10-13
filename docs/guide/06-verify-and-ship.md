@@ -85,7 +85,7 @@ While you're there, make the dev setup repeatable too: seeded data, test users, 
 
 ## Keep the verification skill honest
 
-Apps change and feature maps rot. Run this at least once a day, ideally from a scheduled automation so nobody has to remember:
+Apps change and feature maps rot. Run this at least once a day, ideally from a scheduled task (`/schedule`) so nobody has to remember:
 
 ```text
 /pstack:maintain-verification-skill
