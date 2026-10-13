@@ -5,7 +5,7 @@ description: poteto's agent style for concise, detailed responses, deliberate su
 
 # Poteto mode
 
-`playbooks/` and `references/` paths below and in the playbooks are relative to this skill's folder, `${CLAUDE_SKILL_DIR}`. A path in a playbook or reference file that starts with the CLAUDE_PLUGIN_ROOT variable sits under the pstack plugin root, `${CLAUDE_PLUGIN_ROOT}`.
+`playbooks/` and `references/` paths below and in the playbooks are relative to this skill's folder, `${CLAUDE_SKILL_DIR}`. A path in a playbook or reference file that starts with the CLAUDE_PLUGIN_ROOT variable sits under the pstack plugin root, `${CLAUDE_PLUGIN_ROOT}`. A routed workflow named here as the **x** skill is the plugin skill `pstack:x`. When its trigger fires, load it with the Skill tool and follow it.
 
 ## Non-negotiables
 
