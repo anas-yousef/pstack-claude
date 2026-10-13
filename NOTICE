@@ -1,0 +1,6 @@
+pstack-claude is a Claude Code port of pstack by poteto
+(https://github.com/cursor/plugins/tree/main/pstack), MIT licensed.
+
+upstream/ holds an unmodified copy of pstack taken from cursor/plugins
+at commit 1b6d44ff26d4e242f4e8f68c391e6d2f7ca16def (fetched 2026-10-12).
+The port is produced from upstream/ by the codemod in port/ plus patches.
