@@ -1,0 +1,45 @@
+--- a/skills/automate-me/SKILL.md
++++ b/skills/automate-me/SKILL.md
+@@ -8,7 +8,7 @@
+ 
+ A guided flow for turning the user's working conventions into a skill agents will follow. The output is one `-mode` skill tailored to them (e.g. `jay-mode`, `priya-mode`).
+ 
+-This skill orchestrates three others: an inline mining pass (see step 1), Cursor's built-in `skill-creator` (authoring), and the **unslop** skill (prose discipline). It sequences them. It doesn't replace them.
++This skill orchestrates three others: an inline mining pass (see step 1), the `skill-creator` skill (authoring), and the **unslop** skill (prose discipline). It sequences them. It doesn't replace them.
+ 
+ ## Flow
+ 
+@@ -26,7 +26,7 @@
+ 
+ ### 1. Mine their history
+ 
+-Locate the active workspace's transcripts before fanning out. The system prompt names the workspace's `agent-transcripts/` directory. Use only that path. Don't glob across `~/.cursor/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects.
++Locate the active workspace's transcripts before fanning out. They live in `~/.claude/projects/<cwd-slug>/`, one `<session-id>.jsonl` per session, where `<cwd-slug>` is the session's absolute working directory with every character other than a letter, digit, or `-` replaced by `-`. A git worktree is its own working directory with its own slug. Use only that directory. Don't glob across `~/.claude/projects/*/`. That crosses workspace boundaries and reads private chats from unrelated projects.
+ 
+ Survey recent agent conversations within that scope for recurring patterns. Run multiple parallel subagents across slices of history (e.g. last 2-4 weeks, split into 3 slices so each has enough material). Each slice mining subagent reads transcripts from the workspace-scoped path the parent provides, looks for the signals below, and returns a short structured list of patterns it saw with evidence pointers. Default signals worth hunting:
+ 
+@@ -43,7 +43,7 @@
+ 
+ Mining misses intent that hasn't come up yet. Use the `AskUserQuestion` tool (structured multi-choice) rather than asking the user to type from scratch.
+ 
+-Shape: one or two questions with 4-6 options each, `allow_multiple: true` for category questions. Start broad ("Which areas matter most?"), then follow up on selected areas with specific options. After the structured rounds, one free-form chat question catches anything the options missed.
++Shape: one or two questions with up to 4 options each, `multiSelect: true` for category questions. Start broad ("Which areas matter most?"), then follow up on selected areas with specific options. After the structured rounds, one free-form chat question catches anything the options missed.
+ 
+ Don't dump 20 questions.
+ 
+@@ -64,13 +64,13 @@
+ 
+ ### 4. Draft the skill
+ 
+-Use Cursor's built-in `skill-creator` skill to author the skill. Placement:
++Use the `skill-creator` skill to author the skill. Placement:
+ 
+ - Path: preserve an existing mode skill's category. For a new mode, use `.claude/skills/<handle>/<handle>-mode/SKILL.md` when the repo has an established personal category for that handle. Otherwise default to `.claude/skills/<handle>-mode/SKILL.md` in the project (or `~/.claude/skills/<handle>-mode/` if the user prefers a personal skill).
+ - Handle: the user's first name or chosen identifier.
+ - Frontmatter `description`: trigger on their name + `/<handle>-mode` + "work in their style", not on generic keywords like "write code" or "review PR".
+ - Frontmatter formatting: follow `skill-creator`'s YAML rules. Keep `description` as one YAML scalar. Quote it or use `description: >-` with indented continuation lines when punctuation or wrapping requires it.
+-- Frontmatter `disable-model-invocation: true` by default. Opt out only if the user explicitly wants their mode to apply on every turn.
++- Frontmatter `disable-model-invocation: true` by default. Opt out only if the user explicitly wants the model to apply their mode without being asked. A line in `CLAUDE.md` is the other way to keep it on.
+ 
+ ### 5. Iterate on prose
+ 

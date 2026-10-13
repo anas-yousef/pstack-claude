@@ -1,0 +1,29 @@
+--- a/scripts/worktree-audit.sh
++++ b/scripts/worktree-audit.sh
+@@ -52,9 +52,11 @@
+ gh pr list --author "@me" --state all --limit 1000 \
+ 	--json number,state,headRefName 2>/dev/null > "$prs" || echo "[]" > "$prs"
+ 
+-# Transcripts dir: ~/.cursor/projects/<slugified-repo-path>/agent-transcripts.
+-slug=$(printf '%s' "$main_wt" | sed 's#^/##; s#/#-#g')
+-transcripts="$HOME/.cursor/projects/$slug/agent-transcripts"
++# Claude Code transcripts: ~/.claude/projects/<cwd-slug>/, where the slug is the
++# session's working directory with every char outside [A-Za-z0-9-] turned into "-".
++# A worktree session runs in the worktree, so search its own slug and the main checkout's.
++slug() { printf '%s' "$1" | sed 's/[^A-Za-z0-9-]/-/g'; }
++projects="$HOME/.claude/projects"
+ now=$(date +%s)
+ 
+ echo "# base: $base"
+@@ -94,8 +96,9 @@
+ 	# Most recent chat whose transcript operated in this worktree. Match path
+ 	# followed by "/" or a quote so glint-482 does not match glint-482-r37.
+ 	last="-"; last_ts=0
+-	if [ -d "$transcripts" ]; then
+-		f=$(rg -l -e "${wt}/" -e "${wt}\"" "$transcripts" 2>/dev/null \
++	transcripts=$(for d in "$projects/$(slug "$main_wt")" "$projects/$(slug "$wt")"; do [ -d "$d" ] && echo "$d"; done)
++	if [ -n "$transcripts" ]; then
++		f=$(printf '%s\n' "$transcripts" | xargs -I{} rg -l -e "${wt}/" -e "${wt}\"" {} 2>/dev/null \
+ 			| xargs stat -f '%m %N' 2>/dev/null | sort -rn | head -1)
+ 		if [ -n "$f" ]; then last_ts=$(echo "$f" | awk '{print $1}')
+ 			last=$(date -r "$last_ts" '+%Y-%m-%d' 2>/dev/null); fi
