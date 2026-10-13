@@ -16,7 +16,7 @@
 -## Cross-model review of the trail
 +## Cross-tier review of the trail
  
--Before handing back, spawn a subagent on a different model family from the one that did the work. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky.
+-Before handing back, spawn a subagent on a different model tier from the one that did the work. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky.
 +Before handing back, spawn a subagent on a different model tier from the one that did the work, such as `opus` when `sonnet` did it. Self-review is not a substitute. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky.
  
  - Decisions logged with weak or absent evidence.

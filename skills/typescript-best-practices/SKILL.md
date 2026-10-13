@@ -2,6 +2,7 @@
 name: typescript-best-practices
 description: TypeScript best practices. Use when reading or editing any .ts or .tsx file.
 paths: ["**/*.ts", "**/*.tsx"]
+disable-model-invocation: true
 ---
 
 # TypeScript best practices
@@ -28,3 +29,5 @@ Apply the **type-system-discipline** principle (`${CLAUDE_PLUGIN_ROOT}/skills/pr
 | Structured telemetry | Prefer structured logger diagnostics with enough context to debug from an id. No `console.log` in shipped code. |
 
 Examples: `references/patterns.md`.
+
+**Paths.** Files in this skill's folder write the pstack plugin root as the CLAUDE_PLUGIN_ROOT variable. It is `${CLAUDE_PLUGIN_ROOT}`. The shell does not set that variable, so write the absolute path into every command and into every prompt you pass to a subagent.

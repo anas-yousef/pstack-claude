@@ -71,3 +71,5 @@ You are the lead reviewer, a pragmatic senior engineer, not a neutral aggregator
 
 ### Agreement Map
 [Where models agreed and diverged, and what that pattern tells us.]
+
+**Model configuration.** Read the project file `.claude/pstack-models.md` when it exists, otherwise the user file `~/.claude/pstack-models.md`. The project file replaces the user file, with no per-line merge. A line is `<role>: <model> <effort>`, and a panel role lists comma-separated entries. Pass the model and the effort as the Agent tool's separate `model` and `effort` parameters.

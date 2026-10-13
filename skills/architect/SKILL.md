@@ -76,3 +76,7 @@ When you scrap:
 ## Outputs
 
 The caller's usage is written first and the type sketch derived from it. One file with new types and signatures for small changes. Module map plus type definitions for larger work. The rationale ships alongside, shaped per `references/rationale-template.md`, including the usage sketch and the synthesis decision.
+
+**Model configuration.** Read the project file `.claude/pstack-models.md` when it exists, otherwise the user file `~/.claude/pstack-models.md`. The project file replaces the user file, with no per-line merge. A line is `<role>: <model> <effort>`, and a panel role lists comma-separated entries. Pass the model and the effort as the Agent tool's separate `model` and `effort` parameters.
+
+**Paths.** Files in this skill's folder write the pstack plugin root as the CLAUDE_PLUGIN_ROOT variable. It is `${CLAUDE_PLUGIN_ROOT}`. The shell does not set that variable, so write the absolute path into every command and into every prompt you pass to a subagent.

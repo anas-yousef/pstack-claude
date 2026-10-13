@@ -70,7 +70,7 @@ Use the `skill-creator` skill to author the skill. Placement:
 - Handle: the user's first name or chosen identifier.
 - Frontmatter `description`: trigger on their name + `/<handle>-mode` + "work in their style", not on generic keywords like "write code" or "review PR".
 - Frontmatter formatting: follow `skill-creator`'s YAML rules. Keep `description` as one YAML scalar. Quote it or use `description: >-` with indented continuation lines when punctuation or wrapping requires it.
-- Frontmatter `disable-model-invocation: true` by default. Opt out only if the user explicitly wants the model to apply their mode without being asked. A line in `CLAUDE.md` is the other way to keep it on.
+- Frontmatter `disable-model-invocation: true` by default. Opt out only if the user explicitly wants the model to apply their mode without being asked. A line in `CLAUDE.md` that tells the model to apply the mode works only with the flag off.
 
 ### 5. Iterate on prose
 

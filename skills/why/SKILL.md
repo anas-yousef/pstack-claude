@@ -31,7 +31,7 @@ Before spawning investigators, build the seed context inline: file paths and lin
 
 ### Discovery
 
-Before spawning investigators, list the available MCP servers. Use the tool list in your context, where MCP tools are named `mcp__<server>__<tool>` and deferred tools appear by name until loaded. Otherwise run `claude mcp list`.
+Before spawning investigators, list the available MCP servers. Use the tool list in your context, where MCP tools are named `mcp__<server>__<tool>` and deferred tools appear by name until loaded.
 
 Map each available MCP to one evidence category:
 
@@ -95,3 +95,5 @@ After Sources Consulted, if the user's `why` question is a precursor to changing
 ## Common Failure Modes to Avoid
 
 - **Recency bias**. Assuming the most recent commit is authoritative. The current shape is often the accretion of many earlier decisions. Trace back.
+
+**Model configuration.** Read the project file `.claude/pstack-models.md` when it exists, otherwise the user file `~/.claude/pstack-models.md`. The project file replaces the user file, with no per-line merge. A line is `<role>: <model> <effort>`, and a panel role lists comma-separated entries. Pass the model and the effort as the Agent tool's separate `model` and `effort` parameters.

@@ -43,3 +43,5 @@ Keep a compact result table, one-line evidenced issues, and explicit gaps or dro
 ## Phase D: Report
 
 Return one consolidated in-chat report with the table, issue one-liners, gaps or dropouts, and the race rule when used.
+
+**Model configuration.** Read the project file `.claude/pstack-models.md` when it exists, otherwise the user file `~/.claude/pstack-models.md`. The project file replaces the user file, with no per-line merge. A line is `<role>: <model> <effort>`, and a panel role lists comma-separated entries. Pass the model and the effort as the Agent tool's separate `model` and `effort` parameters.

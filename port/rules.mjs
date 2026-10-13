@@ -29,7 +29,9 @@ export const MOVE = [
 // Skill frontmatter policy. `disable-model-invocation` per class (brief CONTEXT).
 export const HIDDEN_USER_RUN = ["poteto-help", "ketchup", "bro", "automate-me", "setup-pstack"];
 export const isPrinciple = (dir) => dir.startsWith("principle-");
-export const hideSkill = (dir) => isPrinciple(dir) || HIDDEN_USER_RUN.includes(dir);
+// Not in the brief's lists. Upstream hides it, and its description would fire on every .ts edit.
+export const HIDDEN_KEPT = ["typescript-best-practices"];
+export const hideSkill = (dir) => isPrinciple(dir) || HIDDEN_USER_RUN.includes(dir) || HIDDEN_KEPT.includes(dir);
 
 // Cursor-only frontmatter keys. Claude Code has no custom modes; see README.
 export const DROP_FRONTMATTER_KEYS = ["mode", "icon", "color", "reminder"];
@@ -96,6 +98,8 @@ export const TEXT_RULES = [
   { id: "model-rejects-slug", find: /If the Agent tool rejects a slug, use the default and say so\./g, replace: "If the Agent tool rejects a value, use the default and say so.", min: 4 },
   { id: "model-closest-slug", find: / If it rejects the default, use the closest valid slug of the same family from its error message\./g, replace: "", min: 4 },
 
+  { id: "model-family", find: /\b(different )?model family\b/g, replace: (_, d) => `${d ?? ""}model tier`, min: 2 },
+
   // Cursor-team-kit and Cursor built-ins.
   { id: "create-skill", find: /(?<![\w-])create-skill(?![\w-])/g, replace: "skill-creator", min: 15 },
   { id: "deslop-plugin", find: /the `deslop` skill from the `cursor-team-kit` plugin \(`\/deslop`\)/g, replace: "the built-in `/simplify` command", min: 1 },
@@ -114,10 +118,35 @@ export const TEXT_RULES = [
   // Principle references point at the hidden leaf SKILL.md, read with Read.
   { id: "principle-skill-pair", find: /\*\*([a-z-]+)\*\* and \*\*([a-z-]+)\*\* principle skills/g, replace: (_, a, b) => `**${a}** (${P("principle-" + a)}) and **${b}** (${P("principle-" + b)}) principles`, min: 3 },
   { id: "principle-skill-phrase", find: /\*\*([a-z-]+)\*\* principle skill\b/g, replace: (_, x) => `**${x}** principle (${P("principle-" + x)})`, min: 49 },
-  { id: "principle-bold", find: /(?<!\()\*\*(principle-[a-z-]+)\*\*(?! \()/g, replace: (_, d) => `**${d}** (${P(d)})`, min: 9 },
+  // The router's Principles index keeps its `(**principle-x**)` form; check-refs reads it.
+  { id: "principle-bold", files: /^(?!skills\/poteto-mode\/SKILL\.md$)/, find: /\*\*(principle-[a-z-]+)\*\*(?! \()/g, replace: (_, d) => `**${d}** (${P(d)})`, min: 13 },
+  { id: "principle-bold-router", files: /^skills\/poteto-mode\/SKILL\.md$/, find: /(?<!\()\*\*(principle-[a-z-]+)\*\*(?! \()/g, replace: (_, d) => `**${d}** (${P(d)})`, min: 1 },
   { id: "principle-paren", find: /\((principle-[a-z-]+)\)/g, replace: (_, d) => `(${P(d)})`, min: 4 },
 
   // Scripts moved to the plugin root.
   { id: "scripts-check-plan", find: /`node pstack\/skills\/poteto-mode\/scripts\/check-plan\.mjs /g, replace: "`node ${CLAUDE_PLUGIN_ROOT}/scripts/check-plan.mjs ", min: 1 },
   { id: "scripts-root", files: /^skills\/poteto-mode\//, find: /(?<![\w/}])`(?:bun )?scripts\/(worktree-audit\.sh|watch-pr\/watch-pr|orch\/orch\.ts)/g, replace: (m, f) => m.replace(/scripts\//, "${CLAUDE_PLUGIN_ROOT}/scripts/"), min: 5 },
 ];
+
+// Notes appended to a SKILL.md body, where Claude Code substitutes the variables.
+// `skills` lists skill dirs; `auto` selects every skill whose other files use the
+// literal CLAUDE_PLUGIN_ROOT variable, which nothing substitutes once the model Reads them.
+export const NOTES = [
+  {
+    id: "models-file",
+    skills: ["arena", "architect", "how", "interrogate", "reflect", "swarm", "why"],
+    text: "**Model configuration.** Read the project file `.claude/pstack-models.md` when it exists, otherwise the user file `~/.claude/pstack-models.md`. The project file replaces the user file, with no per-line merge. A line is `<role>: <model> <effort>`, and a panel role lists comma-separated entries. Pass the model and the effort as the Agent tool's separate `model` and `effort` parameters.",
+  },
+  {
+    id: "plugin-root",
+    auto: true,
+    exclude: ["poteto-mode"],
+    text: "**Paths.** Files in this skill's folder write the pstack plugin root as the CLAUDE_PLUGIN_ROOT variable. It is `${CLAUDE_PLUGIN_ROOT}`. The shell does not set that variable, so write the absolute path into every command and into every prompt you pass to a subagent.",
+  },
+];
+
+// Fails the full build when one of these survives outside its allowlist.
+export const FORBIDDEN = {
+  pattern: /\bcursor\b|cursor-team-kit|grok|generalPurpose|\bAskQuestion\b|is_background|\.cursor\/|agent-transcripts|principle skills?\b|environment: ?"|cloud_base_branch|readonly: (true|false)/gi,
+  allow: [{ file: "skills/poteto-help/SKILL.md", match: "Cursor", why: "attribution: a port of poteto's Cursor plugin" }],
+};

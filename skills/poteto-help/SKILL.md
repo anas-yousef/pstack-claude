@@ -39,7 +39,7 @@ When the model file is missing and it matters, ask whether the user wants to pic
 3. Run [`/pstack:setup-pstack`](../setup-pstack/SKILL.md). It asks for a reasoning budget, maps a model to each role, and writes `pstack-models.md`. pstack reads it at each subagent spawn.
 4. Start a real task with `/pstack:poteto-mode`, a goal, and a check that can pass or fail.
 
-Installing changes nothing until the user invokes a skill. Only `/pstack:setup-pstack` loads from the user's words. The [README](../../README.md) and [guide page 1](../../docs/guide/01-setup.md) have the details. Offer to word their first prompt with them, per [`references/prompting.md`](references/prompting.md).
+Installing changes nothing until a skill runs. The routed workflow skills, such as `/pstack:how` and `/pstack:swarm`, can load from the user's words. The principles and the user-run skills (`/pstack:setup-pstack`, `/pstack:poteto-help`, `/pstack:ketchup`, `/pstack:bro`, `/pstack:automate-me`) load only when typed. The [README](../../README.md) and [guide page 1](../../docs/guide/01-setup.md) have the details. Offer to word their first prompt with them, per [`references/prompting.md`](references/prompting.md).
 
 If cost is the worry, say where the tokens go and how to spend fewer. pstack spends extra tokens on subagents and review panels. Rerun `/pstack:setup-pstack` and pick a smaller budget or cheaper models. A role set to `auto` or `inherit-parent` runs on the chat's model, which saves tokens when the chat runs on a cheaper model. A shorter panel list runs fewer subagents, one for each entry. Save `/pstack:poteto-mode` for work that needs rigor.
 
@@ -133,7 +133,7 @@ Principles are one-rule skills that `/pstack:poteto-mode` reads and cites in its
 | A question got treated as the next step of the last task | Say "new task", or say the turn doesn't need the mode. |
 | A new model choice had no effect | A project file `.claude/pstack-models.md` wins over the user file. Check which one `/pstack:setup-pstack` wrote. |
 | Runs cost more than expected | See the cost paragraph under Get set up. |
-| A skill didn't load on its own | Only `/pstack:setup-pstack` loads from the user's words. The others load when the user types them or when `/pstack:poteto-mode` runs them, and it doesn't run every skill. |
+| A skill didn't load on its own | Principles and the user-run skills load only when typed. A routed skill loads when the user's words match it, when the user types it, or when `/pstack:poteto-mode` runs it, and the router doesn't run every skill. |
 | Parallel agents overwrote each other | Give each agent its own worktree, or run them as remote agents, which each get their own machine. |
 | An overnight run moved but finished nothing | `/loop` needs a check that can pass or fail, not a duration. See [guide page 7](../../docs/guide/07-overnight.md). |
 | The reply claims success from a green build | Ask for the real command, flow, stored value, or profile. That's the prove-it-works principle. |

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Setup pstack
 
-Write `pstack-models.md`, the file that sets pstack's model and effort per role. pstack skills read the project file `.claude/pstack-models.md` first, then the user file `~/.claude/pstack-models.md`, then their defaults.
+Write `pstack-models.md`, the file that sets pstack's model and effort per role. pstack skills read the project file `.claude/pstack-models.md` when it exists, otherwise the user file `~/.claude/pstack-models.md`, otherwise their defaults. The project file replaces the user file, with no per-line merge.
 
 ## Steps
 
@@ -25,9 +25,9 @@ The default role-to-model mapping is the file shape shown in step 5 below. Ask o
 - `unlimited — one step above the defaults`
 - `large — the defaults`
 - `medium — one step below the defaults`
-- `small — two steps below the defaults`
+- `small — two steps below the defaults, never below medium`
 
-**(b) Apply it.** Build the working table from the skill defaults, and on a re-run keep any role you changed by model, list, or alias (`inherit-parent`, `auto`). A budget moves the effort of every real entry, panel entries included, along the ladder `low` < `medium` < `high` < `xhigh` < `max`. `unlimited` moves each one step up, `large` keeps it, `medium` moves it one step down, and `small` moves it two steps down. Stop at `max` and `low`. If a model rejects the resulting effort, use the highest effort it accepts below the target, else mark the role as needing a choice. `inherit-parent` and `auto` do not change. So `unlimited` turns `opus xhigh` into `opus max` and `sonnet high` into `sonnet xhigh`. `small` turns them into `opus medium` and `sonnet low`.
+**(b) Apply it.** Build the working table from the skill defaults, and on a re-run keep any role you changed by model, list, or alias (`inherit-parent`, `auto`). A budget moves the effort of every real entry, panel entries included, along the ladder `low` < `medium` < `high` < `xhigh` < `max`. `unlimited` moves each one step up, `large` keeps it, `medium` moves it one step down, and `small` moves it two steps down. Stop at `max` at the top and at `medium` at the bottom, as upstream's `small` did. If a model rejects the resulting effort, use the highest effort it accepts below the target, else mark the role as needing a choice. `inherit-parent` and `auto` do not change. So `unlimited` turns `opus xhigh` into `opus max` and `sonnet high` into `sonnet xhigh`. `small` turns them into `opus medium` and `sonnet medium`.
 
 **(c) Show the roles and confirm.** Show every role with its model and effort, marking any model not in the detected set as needing a choice. Also list each line step 2 dropped. Ask whether to accept as-is or change specific roles, offering the detected models plus `inherit-parent` and `auto` (both mean: this role runs on the parent chat model) as the options. Prefer AskUserQuestion over free text. For panel roles (arena runners, architect runners, interrogate reviewers) the value is a list, and one subagent runs per entry, alias entries included, so the list length sets the count. `arena cross-judge pool` is also a list, but Arena selects one value from it whose model tier differs from the parent's when possible. `swarm workers` is the default model for every worker unless a race or comparison assigns another model per arm. `fable` is an escalation, so offer it but never put it in a default.
 

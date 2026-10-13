@@ -49,6 +49,7 @@ Without it, start each task with `/pstack:poteto-mode`.
 - Node runs `scripts/check-plan.mjs` (Multi-phase plan playbook).
 - [Bun](https://bun.sh) runs `scripts/orch/orch.ts` (Orchestrate playbook) and `scripts/watch-pr/watch-pr` (Babysit and Shipping playbooks). Both install their one dependency on first run.
 - `gh` for every PR playbook.
+- The `skill-creator` skill for the Authoring-a-skill playbook, `/pstack:reflect`, and `/pstack:automate-me`. It is not part of pstack. Install it from Anthropic's skills.
 
 ## Get started
 
@@ -59,7 +60,7 @@ The [pstack guide](docs/guide/README.md) walks through a first real task. `/psta
 
 ## Model configuration
 
-`/pstack:setup-pstack` writes `pstack-models.md`. Skills read the project file `.claude/pstack-models.md` first, then the user file `~/.claude/pstack-models.md`, then their defaults. A line is `<role>: <model> <effort>`, and a panel role lists entries separated by commas. The spawn passes the model and the effort as the Agent tool's separate `model` and `effort` parameters. `inherit-parent` or `auto` runs a role on the parent session's model.
+`/pstack:setup-pstack` writes `pstack-models.md`. Skills read the project file `.claude/pstack-models.md` when it exists, otherwise the user file `~/.claude/pstack-models.md`. The project file replaces the user file as a whole. A role with no line keeps its default. A line is `<role>: <model> <effort>`, and a panel role lists entries separated by commas. The spawn passes the model and the effort as the Agent tool's separate `model` and `effort` parameters. `inherit-parent` or `auto` runs a role on the parent session's model.
 
 | Role | Default |
 | --- | --- |
@@ -69,7 +70,7 @@ The [pstack guide](docs/guide/README.md) walks through a first real task. `/psta
 | `arena runners`, `architect runners` | `opus xhigh, sonnet high` |
 | `interrogate reviewers` | `opus xhigh, sonnet xhigh` |
 
-Upstream's cross-family review (Claude against Grok) is cross-tier review here. `fable` is never a default. It is an escalation you choose for one hard spawn. A budget moves every entry's effort along `low` < `medium` < `high` < `xhigh` < `max`. `unlimited` is one step up, `large` keeps the defaults, `medium` is one step down, and `small` is two steps down.
+Upstream's cross-family review (Claude against Grok) is cross-tier review here. `fable` is never a default. It is an escalation you choose for one hard spawn. A budget moves every entry's effort along `low` < `medium` < `high` < `xhigh` < `max`. `unlimited` is one step up, `large` keeps the defaults, `medium` is one step down, and `small` is two steps down, never below `medium`. Upstream set one absolute effort per budget. With mixed defaults that would break "`large` matches the defaults", so the port moves each entry relative to its default.
 
 ## What the port changes
 
@@ -84,22 +85,25 @@ Every change is in [`port/rules.mjs`](port/rules.mjs) (mechanical rules) or [`po
 - `~/.cursor/rules/pstack-models.mdc` and its Cursor model slugs are `pstack-models.md` with Claude aliases and a separate effort.
 - `agent-transcripts/` is `~/.claude/projects/<cwd-slug>/<session-id>.jsonl`, with subagents under `<session-id>/subagents/`. `<cwd-slug>` is the working directory with every character outside `[A-Za-z0-9-]` replaced by `-`. Skills name their own transcript through `${CLAUDE_SESSION_ID}`. `scripts/worktree-audit.sh` searches both the main checkout's slug and each worktree's slug.
 - `.cursor/skills/` is `.claude/skills/`. Cursor's `create-skill` is the `skill-creator` skill. `/deslop` is the built-in `/simplify`. `control-ui` is Playwright MCP or the built-in browser. `control-cli` is Bash or tmux. Cursor's `/loop` and Plan Mode are Claude Code's.
-- Every "the **x** principle skill" reference names its file, `${CLAUDE_PLUGIN_ROOT}/skills/principle-x/SKILL.md`. Claude Code substitutes the variable in SKILL.md and agent bodies. In playbook and reference files it stays literal, and the router tells the model it means the plugin root.
+- The agent store (Cursor's per-agent directory) is `~/.claude/pstack/<repo-name>/`, outside every repository. Orchestrate's `orch` store and the Multi-phase plan file live there.
+- The Autopilot audit tick re-reads the installed playbook instead of `git show origin/main:pstack/...`, since the plugin is not a checkout of the user's trunk.
+- Every "the **x** principle skill" reference names its file, `${CLAUDE_PLUGIN_ROOT}/skills/principle-x/SKILL.md`. Claude Code substitutes the variable in SKILL.md and agent bodies. In playbook and reference files it stays literal. The router, and a note the codemod appends to every other skill whose files use it, give the absolute path and say the shell doesn't set the variable. Seven panel skills also get an appended note that says where `pstack-models.md` lives.
 - `skills/poteto-mode/scripts/` moved to `scripts/` at the plugin root.
 
 **Skill visibility.** `disable-model-invocation: true` hides a skill from the model in Claude Code, so it applies per class.
 
 | Class | Skills | Flag |
 | --- | --- | --- |
-| Router and routed workflows | `poteto-mode`, `how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `reflect`, `tdd`, `unslop`, `technical-writing`, `no-comments`, `benchmark-checklist`, `blast-radius`, `figure-it-out`, `show-me-your-work`, `create-verification-skill`, `maintain-verification-skill`, `recall`, `teach`, `correct`, `typescript-best-practices` | removed |
+| Router and routed workflows | `poteto-mode`, `how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `reflect`, `tdd`, `unslop`, `technical-writing`, `no-comments`, `benchmark-checklist`, `blast-radius`, `figure-it-out`, `show-me-your-work`, `create-verification-skill`, `maintain-verification-skill`, `recall`, `teach`, `correct` | removed |
 | Principles | the 24 `principle-*` skills, read by file | kept |
-| User-run | `poteto-help`, `ketchup`, `bro`, `automate-me`, `setup-pstack` | kept (added to `setup-pstack`) |
+| User-run | `poteto-help`, `ketchup`, `bro`, `automate-me`, `setup-pstack` | kept (added to `setup-pstack`, which upstream left model-invocable) |
+| Not in the brief | `typescript-best-practices` | kept, as upstream has it. Its `paths:` description would otherwise fire on every TypeScript edit |
 
 `poteto-mode`'s Cursor-only frontmatter (`mode`, `icon`, `color`, `reminder`) is dropped.
 
 **Dropped.** `automations/benny/` (a Cursor Automations bot), `skills/make-bot-ui/` (a Grok Bot webhook UI), every Grok reference, the Cursor manifests, and the logo.
 
-**Deliberate mentions.** `grep -rniE 'cursor|grok|generalPurpose|AskQuestion|is_background|\.cursor/|agent-transcripts' skills agents docs` returns two lines. `skills/poteto-help/SKILL.md` says pstack is a port of poteto's Cursor plugin (attribution). `skills/why/SKILL.md` contains the word "precursor".
+**Deliberate mentions.** `grep -rniE 'cursor|grok|generalPurpose|AskQuestion|is_background|\.cursor/|agent-transcripts' skills agents docs` returns two lines. `skills/poteto-help/SKILL.md` says pstack is a port of poteto's Cursor plugin (attribution). `skills/why/SKILL.md` contains the word "precursor". `node port/port.mjs` enforces this. It fails when Cursor-only text survives outside its allowlist in `port/rules.mjs`. Under `scripts/`, `package.json` keeps its `@cursor-skill/poteto-mode-tools` package name, and `watch-pr/github.ts` keeps its Cursor Bugbot detection, because the playbooks still triage Bugbot.
 
 ## Re-sync with upstream
 
