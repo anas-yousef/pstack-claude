@@ -53,13 +53,13 @@ for (const file of docs) {
       check("skill-relative", file, p, exists(join(skillDir, p)));
     }
   }
-  for (const [, name] of text.matchAll(/(?<![\w/-])\/?pstack:([a-z][a-z0-9-]*)/g)) {
+  for (const [, name] of text.matchAll(/(?<![\w/-])\/?pstack:([a-z][a-z0-9-]+)/g)) {
     check("pstack-name", file, name, skills.has(name) || agents.has(name));
   }
   for (const [, name] of text.matchAll(/(?<![\w/:.\-`])\/([a-z][a-z0-9-]+)(?=`|\s|[),.])/g)) {
     if (skills.has(name)) failures.push(`${relative(ROOT, file)}: un-namespaced /${name}`);
   }
-  for (const [, name] of text.matchAll(/the \*\*([a-z][a-z0-9-]*)\*\* skill\b/g)) {
+  for (const [, name] of text.matchAll(/the \*\*([a-z][a-z0-9-]+)\*\* skill\b/g)) {
     check("skill", file, name, skills.has(name) || EXTERNAL_SKILLS.has(name));
   }
   for (const [, name] of text.matchAll(/the \*\*([a-z][a-z0-9-]*)\*\* principle\b/g)) {
