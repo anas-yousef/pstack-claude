@@ -18,7 +18,7 @@ Then install the plugin from your shell:
 claude plugin install pstack@pstack-claude
 ```
 
-`/plugin install pstack@pstack-claude` inside a session does the same. The repository is private, so your GitHub credentials (`gh auth login`) must reach it.
+`/plugin install pstack@pstack-claude` inside a session does the same.
 
 ### Allow pstack to read its own files
 
@@ -70,7 +70,7 @@ The [pstack guide](docs/guide/README.md) walks through a first real task. `/psta
 | `arena runners`, `architect runners` | `opus xhigh, sonnet high` |
 | `interrogate reviewers`, `arena cross-judge pool` | `opus xhigh, sonnet xhigh` |
 
-Upstream's cross-family review (Claude against Grok) is cross-tier review here. The brief listed the cross-judge pool as `opus xhigh` alone. The port adds `sonnet xhigh`, because Arena picks a judge on a different tier from the parent, and an Opus session had no other tier to pick. `fable` is never a default. It is an escalation you choose for one hard spawn. A budget moves every entry's effort along `low` < `medium` < `high` < `xhigh` < `max`. `unlimited` is one step up, `large` keeps the defaults, `medium` is one step down, and `small` is two steps down, never below `medium`. Upstream set one absolute effort per budget. With mixed defaults that would break "`large` matches the defaults", so the port moves each entry relative to its default.
+Upstream's cross-family review (Claude against Grok) is cross-tier review here. The cross-judge pool defaults to `opus xhigh, sonnet xhigh`, because Arena picks a judge on a different tier from the parent, and an Opus session had no other tier to pick. `fable` is never a default. It is an escalation you choose for one hard spawn. A budget moves every entry's effort along `low` < `medium` < `high` < `xhigh` < `max`. `unlimited` is one step up, `large` keeps the defaults, `medium` is one step down, and `small` is two steps down, never below `medium`. Upstream set one absolute effort per budget. With mixed defaults that would break "`large` matches the defaults", so the port moves each entry relative to its default.
 
 ## What the port changes
 
@@ -97,13 +97,25 @@ Every change is in [`port/rules.mjs`](port/rules.mjs) (mechanical rules) or [`po
 | Router and routed workflows | `poteto-mode`, `how`, `why`, `architect`, `arena`, `swarm`, `interrogate`, `reflect`, `tdd`, `unslop`, `technical-writing`, `no-comments`, `benchmark-checklist`, `blast-radius`, `figure-it-out`, `show-me-your-work`, `create-verification-skill`, `maintain-verification-skill`, `recall`, `teach`, `correct` | removed |
 | Principles | the 24 `principle-*` skills, read by file | kept |
 | User-run | `poteto-help`, `ketchup`, `bro`, `automate-me`, `setup-pstack` | kept (added to `setup-pstack`, which upstream left model-invocable) |
-| Not in the brief | `typescript-best-practices` | kept, as upstream has it. Its `paths:` description would otherwise fire on every TypeScript edit |
+| Other | `typescript-best-practices` | kept, as upstream has it. Its `paths:` description would otherwise fire on every TypeScript edit |
 
 `poteto-mode`'s Cursor-only frontmatter (`mode`, `icon`, `color`, `reminder`) is dropped.
 
 **Dropped.** `automations/benny/` (a Cursor Automations bot), `skills/make-bot-ui/` (a Grok Bot webhook UI), every Grok reference, the Cursor manifests, and the logo.
 
 **Deliberate mentions.** `grep -rniE 'cursor|grok|generalPurpose|AskQuestion|is_background|\.cursor/|agent-transcripts' skills agents docs` returns two lines. `skills/poteto-help/SKILL.md` says pstack is a port of poteto's Cursor plugin (attribution). `skills/why/SKILL.md` contains the word "precursor". `node port/port.mjs` enforces this. It fails when Cursor-only text survives outside its allowlist in `port/rules.mjs`. Under `scripts/`, `package.json` keeps its `@cursor-skill/poteto-mode-tools` package name, and `watch-pr/github.ts` keeps its Cursor Bugbot detection, because the playbooks still triage Bugbot.
+
+## Cloud sessions
+
+A Claude Code cloud session (claude.ai/code, or a routine) starts from a clean VM. It doesn't install plugins that the repository's `.claude/settings.json` enables, and its safety check blocks installing them once Claude is running. Install pstack in the cloud environment's setup script instead, which runs before Claude Code starts:
+
+```bash
+claude plugin install pstack --marketplace anas-yousef/pstack-claude --scope user --yes
+```
+
+Also add `Read(~/.claude/plugins/**)` to `~/.claude/settings.json` in the same script, so the router can read its playbooks. Git inside the VM reaches public repositories and the repositories attached to the session. A session with several repositories attached starts in `/home/user` instead of inside a repository.
+
+The Agent tool's `isolation: "remote"` isn't offered in every session. Where it isn't, pstack's fallback runs the worker as a local background agent in its own git worktree.
 
 ## Re-sync with upstream
 
@@ -128,17 +140,17 @@ To change the port itself, edit the output under `skills/`, `agents/`, `scripts/
 
 ## Smoke run
 
-Seven live runs on 2026-10-13, Claude Code 2.1.296, default model, each `claude --plugin-dir <this repo> --add-dir <this repo> --permission-mode acceptEdits -p "/pstack:poteto-mode <task>"` in a scratch git repo. The transcripts are on the owner's machine.
+Seven live runs on 2026-10-13, Claude Code 2.1.296, default model, each `claude --plugin-dir <this repo> --add-dir <this repo> --permission-mode acceptEdits -p "/pstack:poteto-mode <task>"` in a scratch git repo. The maintainer keeps the transcripts.
 
-| Run | Task | Transcript |
-| --- | --- | --- |
-| 1 | `slugify('Hello, World!')` keeps a trailing dash | `<scratch>/smoke-repo/aaf0609c-8374-42a5-b87b-6f97ff9522a9.jsonl` |
-| 2 | A memoized `loadConfig` drops env overrides (a regression across three commits) | `<scratch>/smoke-repo2/2b610c2d-73f3-41a6-8e62-e6fef853e67b.jsonl` |
-| 3 | Run 2 again, after the router line that maps "the **x** skill" to `pstack:x` | `<scratch>/smoke-repo2/8dafa1e1-149c-4044-a6a4-9d203f4e01ac.jsonl` |
-| 4 | Run 2, also asking for a PR description | `<scratch>/smoke-repo2/5c3452ca-1712-47d5-aabe-81c6c93d70e8.jsonl` |
-| 5 | Run 1 again, on the final tree after the review fixes | `<scratch>/smoke-repo/8a5dc46a-84b1-4077-9df3-4ce8bc331f9f.jsonl` |
-| 6 | A job queue whose worker and scheduler both re-queue a failed job (two-module fix) | `<scratch>/smoke-repo3/b0d5bdb6-c873-467e-b732-b9ba5572fc09.jsonl` |
-| 7 | Investigation on the run 6 repo: "how does retry handling work, and are we sure the split is right?" | `<scratch>/smoke-repo3/9ba2e81e-d4ec-4f0c-837d-9c730f6ab27a.jsonl` |
+| Run | Task |
+| --- | --- |
+| 1 | `slugify('Hello, World!')` keeps a trailing dash |
+| 2 | A memoized `loadConfig` drops env overrides (a regression across three commits) |
+| 3 | Run 2 again, after the router line that maps "the **x** skill" to `pstack:x` |
+| 4 | Run 2, also asking for a PR description |
+| 5 | Run 1 again, on the final tree after the review fixes |
+| 6 | A job queue whose worker and scheduler both re-queue a failed job (two-module fix) |
+| 7 | Investigation on the run 6 repo: "how does retry handling work, and are we sure the split is right?" |
 
 Every run loaded the router, opened `playbooks/bug-fix.md`, and read 3 to 5 principle leaves with Read from the plugin root. Every run reproduced the bug, committed a failing test before the fix, fixed the root cause, and named the principles that shaped each choice. Run 2 bisected to the regressing commit. Run 1 surfaced the missed "canonical **x** principle skill" phrase, now fixed in the rules.
 

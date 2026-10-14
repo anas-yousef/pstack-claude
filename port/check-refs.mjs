@@ -16,7 +16,7 @@ const docs = ["skills", "agents", "docs"].flatMap((d) => walk(join(ROOT, d))).fi
 const skills = new Set(readdirSync(join(ROOT, "skills")).filter((d) => existsSync(join(ROOT, "skills", d, "SKILL.md"))));
 const agents = new Set(readdirSync(join(ROOT, "agents")).map((f) => f.replace(/\.md$/, "")));
 // Skills, agents, and commands that live outside this plugin, by name. Each is a
-// deliberate mapping target from the brief; anything else unresolved is a failure.
+// deliberate mapping target of the port; anything else unresolved is a failure.
 const EXTERNAL_SKILLS = new Set(["skill-creator"]);
 const EXTERNAL_AGENTS = new Set(["general-purpose", "Explore"]);
 

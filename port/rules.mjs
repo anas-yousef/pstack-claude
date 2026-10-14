@@ -11,8 +11,8 @@ export const MANAGED = [".claude-plugin", "skills", "agents", "scripts", "docs/g
 
 // Upstream paths (prefix match) that are not ported.
 export const DROP = [
-  { path: "automations/", why: "benny is a Cursor Automations bot (brief: drop)" },
-  { path: "skills/make-bot-ui/", why: "drives a Grok Bot webhook UI (brief: drop)" },
+  { path: "automations/", why: "benny is a Cursor Automations bot (port decision: drop)" },
+  { path: "skills/make-bot-ui/", why: "drives a Grok Bot webhook UI (port decision: drop)" },
   { path: ".cursor-plugin/", why: "Cursor manifest; replaced by .claude-plugin/" },
   { path: "plugin.json", why: "agent-plugins.org manifest; replaced by .claude-plugin/plugin.json" },
   { path: "README.md", why: "upstream README; the port has its own README.md" },
@@ -23,13 +23,13 @@ export const DROP = [
 
 // Upstream prefix -> output prefix. First match wins. Unlisted paths keep their path.
 export const MOVE = [
-  { from: "skills/poteto-mode/scripts/", to: "scripts/", why: "brief layout: scripts/ at the plugin root" },
+  { from: "skills/poteto-mode/scripts/", to: "scripts/", why: "port layout: scripts/ at the plugin root" },
 ];
 
-// Skill frontmatter policy. `disable-model-invocation` per class (brief CONTEXT).
+// Skill frontmatter policy. `disable-model-invocation` per class (see README, Skill visibility).
 export const HIDDEN_USER_RUN = ["poteto-help", "ketchup", "bro", "automate-me", "setup-pstack"];
 export const isPrinciple = (dir) => dir.startsWith("principle-");
-// Not in the brief's lists. Upstream hides it, and its description would fire on every .ts edit.
+// Not one of the named classes. Upstream hides it, and its description would fire on every .ts edit.
 export const HIDDEN_KEPT = ["typescript-best-practices"];
 export const hideSkill = (dir) => isPrinciple(dir) || HIDDEN_USER_RUN.includes(dir) || HIDDEN_KEPT.includes(dir);
 
